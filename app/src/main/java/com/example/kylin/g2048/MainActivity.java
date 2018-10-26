@@ -13,7 +13,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -30,11 +32,15 @@ public class MainActivity extends ActionBarActivity {
     Game g;
     private String TAG = "Game";
 
+    ImageButton imgBtRestart;
+    TextView txtMsg;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        imgBtRestart = (ImageButton)findViewById(R.id.imgbtRestart);
+        txtMsg = (TextView)findViewById(R.id.txtMsg);
         img = (ImageView)findViewById(R.id.imageView);
 
 
@@ -57,6 +63,19 @@ public class MainActivity extends ActionBarActivity {
         img.setImageBitmap(bitmap);
         img.setOnTouchListener(new ImageTouchListener());
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        imgBtRestart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                g = new Game(numPiece,numPiece);
+                g.genNum();
+                drawBoard();
+                imgBtRestart.setVisibility(View.GONE);
+                txtMsg.setVisibility(View.GONE);
+            }
+        });
+        imgBtRestart.setVisibility(View.GONE);
+        txtMsg.setVisibility(View.GONE);
         Log.e(TAG,"onCreate end");
     }
     void drawBoard(){
@@ -181,7 +200,9 @@ public class MainActivity extends ActionBarActivity {
                         }
                     }
                     if(g.canMove() == false){
-                        Toast.makeText(MainActivity.this,"GG",Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this,"Game Over",Toast.LENGTH_LONG).show();
+                        imgBtRestart.setVisibility(View.VISIBLE);
+                        txtMsg.setVisibility(View.VISIBLE);
                     }
 
                     g.genNum();
