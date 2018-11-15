@@ -62,6 +62,7 @@ public class MainActivity extends ActionBarActivity {
 
         g = new Game(numPiece,numPiece);
         g.genNum();
+        g.genNum();
         drawBoard();
 
         img.setImageBitmap(bitmap);
