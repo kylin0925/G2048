@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -19,7 +20,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.support.v4.view.GestureDetectorCompat;
 
 public class MainActivity extends ActionBarActivity {
     ImageView img;
@@ -37,6 +38,7 @@ public class MainActivity extends ActionBarActivity {
 
     ImageButton imgBtRestart;
     TextView txtMsg;
+    GestureDetectorCompat gestureDetector;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +71,8 @@ public class MainActivity extends ActionBarActivity {
         drawBoard();
 
         img.setImageBitmap(bitmap);
+
+        gestureDetector = new GestureDetectorCompat(this,new GestureListener());
         img.setOnTouchListener(new ImageTouchListener());
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
@@ -162,62 +166,57 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+    private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final int SWIPE_THRESHOLD = 100;
+        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
 
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            boolean result = false;
+            try {
+                float diffY = e2.getY() - e1.getY();
+                float diffX = e2.getX() - e1.getX();
+                if (Math.abs(diffX) > Math.abs(diffY)) {
+                    if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                        if (diffX > 0) {
+                            g.move(g.RIGHT);
+                        } else {
+                            g.move(g.LEFT);
+                        }
+                    }
+                    result = true;
+                }
+                else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffY > 0) {
+                        g.move(g.DOWN);
+                    } else {
+                        g.move(g.UP);
+                    }
+                }
+                if(g.canMove() == false){
+                    Toast.makeText(MainActivity.this,"Game Over",Toast.LENGTH_LONG).show();
+                    imgBtRestart.setVisibility(View.VISIBLE);
+                    txtMsg.setVisibility(View.VISIBLE);
+                }
+                g.genNum();
+                drawBoard();
+                result = true;
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            return result;
+        }
+    }
     class ImageTouchListener implements View.OnTouchListener {
-        float down_x = -1;
-        float down_y = -1;
-        float up_x = -1;
-        float up_y = -1;
 
         @Override
         public boolean onTouch(View v, MotionEvent motionEvent) {
-            switch (motionEvent.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    Log.e(TAG, "ACTION_DOWN");
-                    Log.e("Image", "onTouch " + motionEvent.getAction() + " x " + motionEvent.getRawX() + " y " + motionEvent.getRawY());
-                    down_x = motionEvent.getRawX();
-                    down_y = motionEvent.getRawY();
-                    break;
-                case MotionEvent.ACTION_UP:
-                    Log.e(TAG, "ACTION_UP");
-                    Log.e("Image", "onTouch " + motionEvent.getAction() + " x " + motionEvent.getRawX() + " y " + motionEvent.getRawY());
-                    up_x = motionEvent.getRawX();
-                    up_y = motionEvent.getRawY();
-
-                    float dx = Math.abs(down_x - up_x);
-                    float dy = Math.abs(down_y - up_y);
-                    if (dx > dy) {
-                        Log.e(TAG, "move hori");
-
-                        if (down_x > up_x) {
-                            //move_leftright(3);
-                            g.move(g.LEFT);
-                        } else {
-                            //move_leftright(2);
-                            g.move(g.RIGHT);
-                        }
-                    } else {
-                        Log.e(TAG, "move v");
-
-                        if (down_y > up_y) {
-                            //move_updown(1);
-                            g.move(g.UP);
-                        } else {
-                            //move_updown(0);
-                            g.move(g.DOWN);
-                        }
-                    }
-                    if(g.canMove() == false){
-                        Toast.makeText(MainActivity.this,"Game Over",Toast.LENGTH_LONG).show();
-                        imgBtRestart.setVisibility(View.VISIBLE);
-                        txtMsg.setVisibility(View.VISIBLE);
-                    }
-
-                    g.genNum();
-                    drawBoard();
-                    break;
-            }
-
+            gestureDetector.onTouchEvent(motionEvent);
             return true;
         }
     }
