@@ -5,10 +5,12 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -29,6 +31,7 @@ public class MainActivity extends ActionBarActivity {
     int numPiece = 4;
     int gap = 10;
     float gridWidth;
+    float numSize = 50;
     Game g;
     private String TAG = "Game";
 
@@ -38,7 +41,12 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        imgWidth = size.x - 10;
+        imgHeight = imgWidth;
+        numSize = imgHeight/8 -20;
         imgBtRestart = (ImageButton)findViewById(R.id.imgbtRestart);
         txtMsg = (TextView)findViewById(R.id.txtMsg);
         img = (ImageView)findViewById(R.id.imageView);
@@ -111,13 +119,13 @@ public class MainActivity extends ActionBarActivity {
             }
         }
     }
-    int[] gridColor = { Color.GRAY  ,Color.BLUE     ,Color.CYAN     ,Color.DKGRAY,
-                        Color.GREEN ,Color.LTGRAY   ,Color.MAGENTA  ,Color.RED,
+    int[] gridColor = { Color.GRAY  ,0xff8e8eff     ,Color.CYAN     ,0xffff8080,
+                        Color.GREEN ,0xffff8040   ,Color.MAGENTA  ,Color.RED,
                         Color.YELLOW,0xff345678     ,0xff667788     ,0xaabbccdd,
                         0xffbbeecc, 0xff0022ff      ,0xff11ff00     ,0xff77dd00};
     void drawNum(int x,int y,int value){
         Paint p = new Paint();
-        p.setTextSize(50);
+        p.setTextSize(numSize);
         int idx = (int)(Math.log(value)/Math.log(2));
         p.setColor(gridColor[idx]);
         canvas.drawRect(gap*(x+1) + x * gridWidth,gap*(y+1)+gridWidth*y,
@@ -127,7 +135,7 @@ public class MainActivity extends ActionBarActivity {
         Typeface face = Typeface.create(Typeface.SANS_SERIF,Typeface.BOLD);
 
         p.setTypeface(face);
-        canvas.drawText(Integer.toString(value),10 + (gridWidth +gap)* x + 20 ,10 + (gridWidth+gap)*(y+1) - 30,p);
+        canvas.drawText(Integer.toString(value),10 + (gridWidth +gap)* x + 40 ,10 + (gridWidth+gap)*(y+1) - 60,p);
         //p.setColor(Color.BLACK);
         //canvas.drawRect(gap*(x+1) + gridWidth*x,gap*(y+1) + gridWidth*y,(gap + gridWidth)*(x+1),(gap+gridWidth)*(y+1),p);
         //canvas.drawText("2",10 + 87/2 -10 ,10 + 97,p);
