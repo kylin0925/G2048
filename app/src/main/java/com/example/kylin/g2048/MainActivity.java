@@ -53,7 +53,6 @@ public class MainActivity extends ActionBarActivity {
         txtMsg = (TextView)findViewById(R.id.txtMsg);
         img = (ImageView)findViewById(R.id.imageView);
 
-
         bitmap = Bitmap.createBitmap(imgWidth,imgHeight, Bitmap.Config.ARGB_4444);
         canvas = new Canvas(bitmap);
 
@@ -61,11 +60,6 @@ public class MainActivity extends ActionBarActivity {
         Paint p = new Paint();
         p.setTextSize(50);
 
-        //canvas.drawText("1234567890abcdef",10 ,60,p);
-        //Typeface face = Typeface.create(Typeface.SERIF,Typeface.NORMAL);
-        //p.setTypeface(face);
-        //canvas.drawText("1234567890abcdef",10 ,100,p);
-        //p.setColor(Color.argb(80,127,127,127));
         g = new Game(numPiece,numPiece);
         g.genNum();
         drawBoard();
@@ -102,7 +96,6 @@ public class MainActivity extends ActionBarActivity {
                     drawNum(j,i,map[i][j]);
             }
         }
-        //invalidate();
         img.invalidate();
     }
     void clearImage(){
